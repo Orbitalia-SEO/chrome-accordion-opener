@@ -22,11 +22,12 @@ Se ejecuta también dentro de iframes del mismo origen (`allFrames: true`).
 
 ## Instalación (modo desarrollador)
 
-1. Clona este repo o descarga el ZIP.
-2. Abre `chrome://extensions/` en Chrome / Edge / Brave.
-3. Activa **Modo de desarrollador** (esquina superior derecha).
-4. Click en **Cargar descomprimida** y selecciona la carpeta del proyecto.
-5. (Opcional) Fija el icono a la barra de herramientas desde el menú de extensiones.
+1. Descarga el ZIP desde GitHub (botón verde **Code → Download ZIP**) o clona el repo.
+2. **Descomprime el ZIP** en una carpeta estable de tu equipo (p. ej. `Documentos/Extensiones/chrome-accordion-opener`). Chrome necesita acceso continuo a esa carpeta, así que no la borres ni la muevas después.
+3. Abre `chrome://extensions/` en Chrome / Edge / Brave.
+4. Activa **Modo de desarrollador** (esquina superior derecha).
+5. Click en **Cargar descomprimida** y selecciona la carpeta descomprimida (la que contiene `manifest.json`, no el ZIP ni una carpeta padre).
+6. (Opcional) Fija el icono a la barra de herramientas desde el menú de extensiones.
 
 ## Uso
 
