@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Orbitalia Accordion Opener",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Abre todos los acordeones, toggles, tabs y elementos <details> de una página con un solo click. Compatible con Divi, Elementor, Bootstrap, WPBakery, Beaver Builder, Kadence, Gutenberg y más.",
   "author": "Orbitalia",
   "action": {

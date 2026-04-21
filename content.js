@@ -2,8 +2,27 @@
   let opened = 0;
   const bump = () => { opened++; };
 
+  // Para anchors: bloquea la navegación por defecto (hash change o URL) en fase
+  // captura ANTES de que el navegador la ejecute, pero deja que los handlers JS
+  // del framework (fase burbuja) sigan corriendo y abran el acordeón.
+  // Para submit buttons: skip — podrían enviar formularios y recargar.
   const safeClick = (el) => {
-    try { el.click(); bump(); } catch (_) {}
+    try {
+      const tag = el.tagName;
+      if (tag === 'A') {
+        const preventNav = (e) => {
+          e.preventDefault();
+          el.removeEventListener('click', preventNav, true);
+        };
+        el.addEventListener('click', preventNav, true);
+        el.click();
+      } else if (tag === 'BUTTON' && el.type === 'submit') {
+        return;
+      } else {
+        el.click();
+      }
+      bump();
+    } catch (_) {}
   };
 
   // ---------- Divi ----------
@@ -16,11 +35,11 @@
   });
 
   // Divi tabs
-  document.querySelectorAll('.et_pb_tabs_controls li:not(.et_pb_tab_active) a').forEach(el => safeClick(el));
+  document.querySelectorAll('.et_pb_tabs_controls li:not(.et_pb_tab_active) a').forEach(safeClick);
 
   // ---------- Elementor legacy (accordion + toggle + tabs) ----------
-  document.querySelectorAll('.elementor-tab-title:not(.elementor-active)').forEach(el => safeClick(el));
-  document.querySelectorAll('.elementor-toggle-title:not(.elementor-active)').forEach(el => safeClick(el));
+  document.querySelectorAll('.elementor-tab-title:not(.elementor-active)').forEach(safeClick);
+  document.querySelectorAll('.elementor-toggle-title:not(.elementor-active)').forEach(safeClick);
 
   // ---------- Elementor v3+ / Gutenberg / nativos: <details> ----------
   document.querySelectorAll('details:not([open])').forEach(el => {
@@ -69,7 +88,7 @@
     if (inner) inner.style.display = 'block';
     bump();
   });
-  document.querySelectorAll('.kt-blocks-accordion-header[aria-expanded="false"]').forEach(el => safeClick(el));
+  document.querySelectorAll('.kt-blocks-accordion-header[aria-expanded="false"]').forEach(safeClick);
 
   // ---------- Oxygen Builder ----------
   document.querySelectorAll('.oxy-pro-accordion_row:not(.oxy-pro-accordion-row-active)').forEach(el => {
@@ -77,18 +96,20 @@
     bump();
   });
 
-  // ---------- GenerateBlocks / Stackable / Ultimate Addons ----------
+  // ---------- Ultimate Addons (UAGB) ----------
   document.querySelectorAll('.uagb-faq-item:not(.uagb-faq-item-active)').forEach(el => {
     el.classList.add('uagb-faq-item-active');
     bump();
   });
+
+  // ---------- Stackable ----------
   document.querySelectorAll('.stk-block-accordion:not([data-open])').forEach(el => {
     el.setAttribute('data-open', 'true');
     bump();
   });
 
   // ---------- jQuery UI accordion ----------
-  document.querySelectorAll('.ui-accordion-header:not(.ui-accordion-header-active)').forEach(el => safeClick(el));
+  document.querySelectorAll('.ui-accordion-header:not(.ui-accordion-header-active)').forEach(safeClick);
 
   // ---------- Foundation ----------
   document.querySelectorAll('.accordion-item:not(.is-active)').forEach(el => {
@@ -101,12 +122,15 @@
     bump();
   });
 
-  // ---------- ARIA genérico (último, captura cualquier patrón estándar) ----------
-  document.querySelectorAll('[aria-expanded="false"]').forEach(el => {
-    const tag = el.tagName.toLowerCase();
-    if (tag === 'button' || tag === 'a' || el.hasAttribute('role')) {
-      safeClick(el);
-    }
+  // ---------- ARIA genérico (fallback) ----------
+  // Solo botones no-submit y role=button. Excluimos menús de navegación y
+  // dropdowns de menú para no disparar navegaciones ni abrir megamenús.
+  const NAV_SELECTOR = 'nav, [role="navigation"], .nav, .menu, .navbar, .main-menu, .site-navigation, .main-navigation, .primary-menu, header .menu';
+  document.querySelectorAll(
+    'button[aria-expanded="false"]:not([type="submit"]):not([data-toggle="dropdown"]):not([data-bs-toggle="dropdown"]):not(.dropdown-toggle), [role="button"][aria-expanded="false"]'
+  ).forEach(el => {
+    if (el.closest(NAV_SELECTOR)) return;
+    safeClick(el);
   });
 
   console.log(`%c[Orbitalia Accordion Opener] ✅ Procesados: ${opened}`, 'color:#00a878;font-weight:bold');
